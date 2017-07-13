@@ -1,0 +1,79 @@
+package lex_test
+
+import (
+	"bytes"
+	"fmt"
+	"io/ioutil"
+	"os"
+	"github.com/pennydb/lex"
+
+	lmdb "github.com/szferi/gomdb"
+)
+
+type planet struct {
+	Name     string
+	Distance float32 //AU
+	Mass     float32 //Earth masses
+}
+
+func setupLmdb() *lmdb.Env {
+	path, _ := ioutil.TempDir("", "lex_lmdb_example")
+	env, _ := lmdb.NewEnv()
+	env.Open(path, 0, 0664)
+	return env
+}
+
+func cleanLmdb(env *lmdb.Env) {
+	env.Close()
+	path, _ := env.Path()
+	os.RemoveAll(path)
+}
+
+func ExampleLmdb() {
+	//from https://en.wikipedia.org/wiki/Solar_System
+	planets := []planet{
+		{"Mercury", 0.4, 0.55},
+		{"Venus", 0.7, 0.815},
+		{"Earth", 1, 1},
+		{"Mars", 1.5, 0.107},
+		{"Jupiter", 5.2, 318},
+		{"Saturn", 9.5, 95},
+		{"Uranus", 19.2, 14},
+		{"Neptune", 30.1, 17},
+	}
+
+	env := setupLmdb()
+	defer cleanLmdb(env)
+
+	//index of {distance} => name
+	txn, _ := env.BeginTxn(nil, 0)
+	dbi, _ := txn.DBIOpen(nil, 0)
+	defer env.DBIClose(dbi)
+	txn.Commit()
+
+	txn, _ = env.BeginTxn(nil, 0)
+	for _, p := range planets {
+		k, _ := lex.Key(p.Distance)
+		v := []byte(p.Name)
+		txn.Put(dbi, k, v, 0)
+	}
+	txn.Commit()
+
+	//range seek on float key
+	//find planets in the goldilocks zone (0.9AU to 1.5AU)
+	min, _ := lex.Key(float32(0.9))
+	max, _ := lex.Key(float32(1.5))
+
+	txn, _ = env.BeginTxn(nil, lmdb.RDONLY)
+	defer txn.Abort()
+	c, _ := txn.CursorOpen(dbi)
+	defer c.Close()
+
+	for k, v, err := c.Get(min, nil, lmdb.SET_RANGE); err != lmdb.NotFound && bytes.Compare(k, max) <= 0; k, v, err = c.Get(nil, nil, lmdb.NEXT) {
+		fmt.Printf("%v\n", string(v))
+	}
+
+	//Output:
+	//Earth
+	//Mars
+}

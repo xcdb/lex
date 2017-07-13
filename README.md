@@ -1,4 +1,4 @@
-lex [![GoDoc](https://godoc.org/github.com/pennydb/lex?status.svg)](https://godoc.org/github.com/pennydb/lex) [![Go Report Card](https://goreportcard.com/badge/github.com/pennydb/lex)](https://goreportcard.com/report/github.com/pennydb/lex)
+lex [![GoDoc](https://godoc.org/github.com/xcdb/lex?status.svg)](https://godoc.org/github.com/xcdb/lex) [![Go Report Card](https://goreportcard.com/badge/github.com/xcdb/lex)](https://goreportcard.com/report/github.com/xcdb/lex)
 ====
 
 Implements an encoder that preserves lexicographical order for [Boolean, Numeric and String](https://golang.org/ref/spec#Types) types in Go.

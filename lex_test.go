@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/pennydb/lex"
+	"github.com/xcdb/lex"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -274,6 +274,46 @@ func ExampleKey() {
 	// Output:
 	// [128 42] [193 19 51 51]
 	// [128 42 193 19 51 51]
+}
+
+//
+
+func TestMustKey_noargs(t *testing.T) {
+	assert.Panics(t, func() {
+		b := lex.MustKey()
+		assert.Nil(t, b)
+	})
+}
+
+func TestMustKey_nil(t *testing.T) {
+	assert.Panics(t, func() {
+		b := lex.MustKey(nil)
+		assert.Nil(t, b)
+	})
+}
+
+func TestMustKey_nilptr(t *testing.T) {
+	assert.Panics(t, func() {
+		var p *int = nil
+		b := lex.MustKey(p)
+		assert.Nil(t, b)
+	})
+}
+
+func TestMustKey_invalid(t *testing.T) {
+	assert.Panics(t, func() {
+		var m map[string]int
+		b := lex.MustKey(m)
+		assert.Nil(t, b)
+	})
+}
+
+func TestMustKey_invalidnilptr(t *testing.T) {
+	assert.Panics(t, func() {
+		var m map[string]int
+		b := lex.MustKey(&m)
+		assert.Nil(t, b)
+	})
 }
 
 //

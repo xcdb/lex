@@ -8,7 +8,7 @@ import (
 	"strconv"
 
 	"github.com/boltdb/bolt"
-	"github.com/pennydb/lex"
+	"github.com/xcdb/lex"
 )
 
 type Movie struct {

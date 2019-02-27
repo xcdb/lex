@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"github.com/pennydb/lex"
+	"github.com/xcdb/lex"
 
 	lmdb "github.com/szferi/gomdb"
 )

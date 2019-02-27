@@ -237,3 +237,12 @@ func Key(data ...interface{}) ([]byte, error) {
 
 	return b, nil
 }
+
+//MustKey panics if Key(data...) returns a non-nil error.
+func MustKey(data ...interface{}) []byte {
+	b, err := Key(data...)
+	if err != nil {
+		panic(err)
+	}
+	return b
+}
